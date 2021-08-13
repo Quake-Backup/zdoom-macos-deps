@@ -265,6 +265,11 @@ class Builder(object):
 
         for dep in state.deps_path.iterdir():
             if dep.is_dir():
+                platform_path = dep / state.platform.architecture
+
+                if platform_path.exists():
+                    dep = platform_path
+
                 symlink_directory(dep, state.prefix_path, cleanup)
 
                 # Do symlink cleanup only once
