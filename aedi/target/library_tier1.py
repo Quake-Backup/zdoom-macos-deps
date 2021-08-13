@@ -52,6 +52,7 @@ class Bzip2Target(MakeTarget):
 class FfiTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='ffi'):
         super().__init__(name)
+        self.merge_platforms = False
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -60,12 +61,6 @@ class FfiTarget(ConfigureMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('libffi.pc.in')
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        for header in ('ffi.h', 'ffitarget.h'):
-            self.make_platform_header(state, header)
 
 
 class FlacTarget(CMakeStaticDependencyTarget):
