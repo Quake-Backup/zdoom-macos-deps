@@ -137,6 +137,7 @@ class GettextTarget(ConfigureMakeStaticDependencyTarget):
 class GlibTarget(BuildTarget):
     def __init__(self, name='glib'):
         super().__init__(name)
+        self.merge_platforms = False
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -189,7 +190,6 @@ endian = 'little'
 
     def post_build(self, state: BuildState):
         self.install(state, tool='ninja')
-        self.make_platform_header(state, '../lib/glib-2.0/include/glibconfig.h')
 
     @staticmethod
     def _process_pkg_config(pcfile: Path, line: str) -> str:
