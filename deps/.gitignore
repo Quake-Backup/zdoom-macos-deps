@@ -1,4 +1,5 @@
-/*/share
+/*/share/
+/*/*/share/
 /**/*.la
 
 # Libraries, tier 1

@@ -169,7 +169,11 @@ class Builder(object):
 
             install_paths.append(state.install_path)
 
-        Builder._merge_install_paths(install_paths, base_install_path)
+        if target.merge_platforms:
+            Builder._merge_install_paths(install_paths, base_install_path)
+        else:
+            for platform, install_path in zip(self._platforms, install_paths):
+                shutil.copytree(install_path, base_install_path / platform.architecture)
 
     @staticmethod
     def _compare_files(paths: typing.Sequence[Path]) -> bool:

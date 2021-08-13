@@ -44,6 +44,7 @@ class Target:
         self.destination = self.DESTINATION_DEPS
 
         self.multi_platform = False
+        self.merge_platforms = False
         self.unsupported_architectures = ()
 
     def prepare_source(self, state: BuildState):
@@ -68,6 +69,7 @@ class BuildTarget(Target):
 
         self.src_root = ''
         self.multi_platform = True
+        self.merge_platforms = True
 
         self.os_version = dict()
         self.os_version['x86_64'] = OS_VERSION_X86_64
