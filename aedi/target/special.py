@@ -16,9 +16,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import os
 import shlex
 import shutil
 import subprocess
+from platform import machine
 
 from ..state import BuildState
 from .base import BuildTarget, Target
@@ -74,7 +76,6 @@ class DownloadCMakeTarget(Target):
 class TestDepsTarget(BuildTarget):
     def __init__(self, name='test-deps'):
         super().__init__(name)
-        self.multi_platform = False
 
     def build(self, state: BuildState):
         assert not state.xcode
@@ -93,8 +94,7 @@ class TestDepsTarget(BuildTarget):
 
             args = [
                 'clang',
-                '-arch', 'x86_64',
-                '-arch', 'arm64',
+                '-arch', state.architecture(),
                 '-std=c++17',
                 '-include', test_path / 'aedi.h',
                 '-o', exe_name,
@@ -102,4 +102,9 @@ class TestDepsTarget(BuildTarget):
             ]
             args += shlex.split(pkg_config_output)
             subprocess.run(args, cwd=state.build_path, check=True)
-            subprocess.run((exe_name,), check=True)
+
+            if state.architecture() == machine():
+                subprocess.run((exe_name,), check=True)
+
+    def post_build(self, state: BuildState):
+        os.makedirs(state.install_path, exist_ok=True)
