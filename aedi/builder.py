@@ -30,7 +30,6 @@ from .utility import (
     OS_VERSION_ARM64,
     OS_VERSION_X86_64,
     CaseInsensitiveDict,
-    CommandLineOptions,
     TargetPlatform,
     symlink_directory,
 )
@@ -86,19 +85,21 @@ class Builder(object):
             if path:
                 return Path(path).absolute()
 
-            sdk_probe_path = state.root_path / 'sdk' / f'MacOSX{os_version}.sdk'
+            sdk_probe_path = state.root_path / f'sdk/MacOSX{os_version}.sdk'
             return sdk_probe_path if sdk_probe_path.exists() else None
+
+        base_prefix_path = state.root_path / 'prefix'
 
         if not arguments.disable_x64:
             os_version = arguments.os_version_x64 if arguments.os_version_x64 else OS_VERSION_X86_64
             sdk_path = adjust_sdk_path(arguments.sdk_path_x64)
-            platform = TargetPlatform('x86_64', 'x86_64-apple-darwin', os_version, sdk_path, state.prefix_path)
+            platform = TargetPlatform('x86_64', 'x86_64-apple-darwin', os_version, sdk_path, base_prefix_path)
             self._platforms.append(platform)
 
         if not arguments.disable_arm:
             os_version = arguments.os_version_arm if arguments.os_version_arm else OS_VERSION_ARM64
             sdk_path = adjust_sdk_path(arguments.sdk_path_arm)
-            platform = TargetPlatform('arm64', 'aarch64-apple-darwin', os_version, sdk_path, state.prefix_path)
+            platform = TargetPlatform('arm64', 'aarch64-apple-darwin', os_version, sdk_path, base_prefix_path)
             self._platforms.append(platform)
 
         assert len(self._platforms) > 0
@@ -129,8 +130,6 @@ class Builder(object):
         if not state.xcode and state.install_path.exists():
             shutil.rmtree(state.install_path)
 
-        self._create_prefix_directory()
-
         if target.multi_platform and not state.xcode:
             self._build_multiple_platforms(target)
         else:
@@ -138,8 +137,9 @@ class Builder(object):
 
     def _build(self, target: Target):
         state = self._state
-        state.environment = os.environ.copy()
-        state.options = CommandLineOptions()
+        state.reset()
+
+        self._create_prefix_directory()
 
         target.configure(state)
         target.build(state)

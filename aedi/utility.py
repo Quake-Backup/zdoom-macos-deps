@@ -53,13 +53,14 @@ class CommandLineOptions(dict):
 
 class TargetPlatform:
     def __init__(self, architecture: str, host: str, os_version: typing.Union[str, StrictVersion],
-                 sdk_path: Path, prefix_path: Path):
+                 sdk_path: Path, base_prefix_path: Path):
         self.architecture = architecture
         self.host = host
         self.os_version = os_version if isinstance(os_version, StrictVersion) else StrictVersion(os_version)
         self.sdk_path = sdk_path
-        self.c_compiler = prefix_path / f'bin/{host}-gcc'
-        self.cxx_compiler = prefix_path / f'bin/{host}-g++'
+        self.prefix_path = base_prefix_path / architecture
+        self.c_compiler = self.prefix_path / f'bin/{host}-gcc'
+        self.cxx_compiler = self.prefix_path / f'bin/{host}-g++'
 
 
 def symlink_directory(src_path: Path, dst_path: Path, cleanup=True):

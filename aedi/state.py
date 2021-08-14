@@ -33,12 +33,14 @@ class BuildState:
         self_path = Path(__file__)
         self.root_path = self_path.parent.parent
         self.deps_path = self.root_path / 'deps'
-        self.prefix_path = self.root_path / 'prefix'
-        self.bin_path = self.prefix_path / 'bin'
-        self.include_path = self.prefix_path / 'include'
-        self.lib_path = self.prefix_path / 'lib'
         self.patch_path = self.root_path / 'patch'
         self.source_path = self.root_path / 'source'
+
+        # Platform-dependent paths
+        self.prefix_path = None
+        self.bin_path = None
+        self.include_path = None
+        self.lib_path = None
 
         self.source = Path()
         self.external_source = True
@@ -53,6 +55,17 @@ class BuildState:
         self.xcode = False
         self.verbose = False
         self.jobs = 1
+
+        self.environment = None
+        self.options = None
+
+    def reset(self):
+        if self.platform:
+            prefix_path = self.platform.prefix_path
+            self.prefix_path = prefix_path
+            self.bin_path = prefix_path / 'bin'
+            self.include_path = prefix_path / 'include'
+            self.lib_path = prefix_path / 'lib'
 
         self.environment = os.environ.copy()
         self.options = CommandLineOptions()
