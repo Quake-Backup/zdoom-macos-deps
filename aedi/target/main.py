@@ -18,7 +18,6 @@
 
 import os
 import shutil
-from pathlib import Path
 from platform import machine
 
 from ..state import BuildState
@@ -103,36 +102,14 @@ class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
 
     def configure(self, state: BuildState):
         if state.static_moltenvk:
-            state.options['CMAKE_EXE_LINKER_FLAGS'] += '-framework Metal -framework IOSurface -lMoltenVK-static'
+            opts = state.options
+            opts['CMAKE_EXE_LINKER_FLAGS'] += '-framework Metal -framework IOSurface '
+            opts['Vulkan_LIBRARY'] = state.lib_path / 'libMoltenVK-static.a'
+            opts['VULKAN_LINK_MOLTENVK'] = 'YES'
+            opts['VULKAN_USE_VOLK'] = 'NO'
 
             # Unset SDK because MoltenVK usually requires the latest one shipped with Xcode
             state.platform.sdk_path = None
-
-            # Replace volk and update revision files
-            replacement_src_path = state.patch_path / 'static-moltenvk'
-            replacement_files = ('UpdateRevision.cmake', 'volk.c', 'volk.h')
-
-            replacement_dst_volk_subpath = 'common/rendering/vulkan/thirdparty/volk/'
-            replacement_dst_volk_path = Path('src') / replacement_dst_volk_subpath
-
-            if not os.path.exists(state.source / replacement_dst_volk_path):
-                replacement_dst_volk_path = Path('source') / replacement_dst_volk_subpath
-
-            replacement_dst_paths = (
-                'tools/updaterevision',
-                replacement_dst_volk_path,
-                replacement_dst_volk_path
-            )
-
-            for dst_path, filename in zip(replacement_dst_paths, replacement_files):
-                src = replacement_src_path / filename
-                dst = state.source / dst_path / filename
-
-                src_stat = os.stat(src)
-                dst_stat = os.stat(dst)
-
-                if src_stat.st_mtime != dst_stat.st_mtime:
-                    shutil.copy2(src, dst)
 
         super().configure(state)
 
