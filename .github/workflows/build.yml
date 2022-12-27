@@ -14,17 +14,17 @@ jobs:
         target: [
           GZDoom,
           Raze,
-          PrBoom-Plus
+#          PrBoom-Plus
         ]
         flavor: [
           {
             name: Make,
-            args: ''
+            args: '--quasi-glib'
           },
-          {
-            name: Xcode,
-            args: '--xcode'
-          }
+#          {
+#            name: Xcode,
+#            args: '--xcode'
+#          }
         ]
 
     steps:
