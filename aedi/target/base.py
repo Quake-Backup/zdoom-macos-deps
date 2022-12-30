@@ -114,7 +114,7 @@ class BuildTarget(Target):
         if cxx_compiler := state.cxx_compiler():
             env['CXX'] = str(cxx_compiler)
 
-        for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
+        for prefix in ('AR', 'C', 'CPP', 'CXX', 'OBJC', 'OBJCXX'):
             var_name = f'{prefix}FLAGS'
 
             state.update_environment(var_name, f'-I{state.include_path}')
