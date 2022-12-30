@@ -114,7 +114,7 @@ class BuildTarget(Target):
         if cxx_compiler := state.cxx_compiler():
             env['CXX'] = str(cxx_compiler)
 
-        for prefix in ('AR', 'C', 'CPP', 'CXX', 'OBJC', 'OBJCXX'):
+        for prefix in ('C', 'CPP', 'CXX', 'OBJC', 'OBJCXX'):
             state.update_environment(f'{prefix}FLAGS', f'-I{state.include_path}')
 
         state.update_environment('LDFLAGS', f'-L{state.lib_path}')
