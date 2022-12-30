@@ -516,8 +516,8 @@ class QuasiGlibTarget(BuildTarget):
         os.makedirs(lib_path, exist_ok=True)
 
         commands = (
-            [state.cxx_compiler(), '-std=c++11', '-O3', '-c', state.patch_path / f'{self.name}.cpp']
-            + shlex.split(state.environment['CXXFLAGS']),
+            [state.cxx_compiler(), '-std=c++11', '-O3', '-c', state.patch_path / f'{self.name}.cpp'] +
+            shlex.split(state.environment['CXXFLAGS']),
             (state.host() + '-ar', '-crs', lib_path / f'lib{self.name}.a', f'{self.name}.o'),
         )
 
