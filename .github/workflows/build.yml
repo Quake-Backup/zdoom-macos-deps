@@ -32,7 +32,6 @@ jobs:
 
       - name: Build
         run: |
-#          ./build.py --target quasi-glib
           ./build.py --target ${{ matrix.target }} ${{ matrix.flavor.args }}
 
       - name: List Build Directory
